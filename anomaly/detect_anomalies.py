@@ -28,7 +28,6 @@ def _required_columns(rules: AnomalyRules) -> set[str]:
         *rules.group_columns,
     }
 
-
 def prepare_anomaly_input(
     dataframe: pd.DataFrame,
     rules: AnomalyRules,
@@ -36,6 +35,7 @@ def prepare_anomaly_input(
     """Clean allocation data before anomaly analysis."""
 
     missing = _required_columns(rules) - set(dataframe.columns)
+
     if missing:
         raise ValueError(
             "Anomaly input missing required columns: "
@@ -50,10 +50,12 @@ def prepare_anomaly_input(
         if "allocation_id" in cleaned.columns
         else "record_id"
     )
+
     duplicate_mask = cleaned.duplicated(
         subset=[dedupe_column],
         keep="first",
     )
+
     duplicate_rows_removed = int(duplicate_mask.sum())
     cleaned = cleaned.loc[~duplicate_mask].copy()
 
@@ -65,16 +67,33 @@ def prepare_anomaly_input(
     category_mask = cleaned["charge_category"].isin(
         rules.included_charge_categories
     )
+
     excluded_category_rows = int((~category_mask).sum())
     cleaned = cleaned.loc[category_mask].copy()
+
+    charge_description = cleaned.get(
+        "charge_description",
+        pd.Series("", index=cleaned.index),
+    ).fillna("").astype(str)
+
+    refund_mask = charge_description.str.contains(
+        r"\brefund\b",
+        case=False,
+        regex=True,
+    )
+
+    refund_rows_excluded = int(refund_mask.sum())
+    cleaned = cleaned.loc[~refund_mask].copy()
 
     invalid_negative_usage = (
         cleaned["charge_category"].eq("Usage")
         & cleaned[rules.cost_column].lt(0)
     )
+
     invalid_negative_rows_removed = int(
         invalid_negative_usage.sum()
     )
+
     cleaned = cleaned.loc[~invalid_negative_usage].copy()
 
     cleaned[rules.date_column] = pd.to_datetime(
@@ -95,6 +114,7 @@ def prepare_anomaly_input(
     metrics = {
         "input_rows": input_rows,
         "duplicate_rows_removed": duplicate_rows_removed,
+        "refund_rows_excluded": refund_rows_excluded,
         "excluded_category_rows": excluded_category_rows,
         "invalid_negative_rows_removed": (
             invalid_negative_rows_removed
@@ -284,6 +304,10 @@ def run_anomaly_detection(
         f"{metrics['duplicate_rows_removed']:,}"
     )
     print(
+    "Legitimate refund rows excluded: "
+    f"{metrics['refund_rows_excluded']:,}"
+)
+    print(
         "Invalid negative Usage rows removed: "
         f"{metrics['invalid_negative_rows_removed']:,}"
     )
@@ -293,6 +317,7 @@ def run_anomaly_detection(
     )
     print(f"Daily points analyzed: {metrics['daily_points']:,}")
     print(f"Anomalies detected: {metrics['anomalies_detected']:,}")
+
 
     if anomalies.empty:
         print("\nNo anomalies met both configured thresholds.")
