@@ -1,0 +1,20 @@
+{
+  "cost_column": "effective_cost",
+  "date_column": "charge_period_start",
+  "group_columns": [
+    "provider_name",
+    "service_name",
+    "sub_account_id",
+    "application"
+  ],
+  "included_charge_categories": [
+    "Usage"
+  ],
+  "baseline_window_days": 14,
+  "minimum_history_days": 7,
+  "relative_threshold": 0.3,
+  "absolute_threshold": 100.0,
+  "critical_relative_threshold": 1.0,
+  "critical_absolute_threshold": 500.0,
+  "detect_decreases": false
+}
