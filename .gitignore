@@ -29,3 +29,6 @@ data/outputs/*
 !data/raw/.gitkeep
 !data/processed/.gitkeep
 !data/outputs/.gitkeep
+# Office temporary lock files
+~$*.xlsx
+.~lock.*

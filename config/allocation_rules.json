@@ -1,0 +1,28 @@
+{
+  "primary_group_columns": [
+    "provider_name",
+    "billing_period_start",
+    "sub_account_id"
+  ],
+  "fallback_group_columns": [
+    "provider_name",
+    "billing_period_start"
+  ],
+  "target_columns": [
+    "application",
+    "environment",
+    "cost_center",
+    "owner"
+  ],
+  "driver_charge_categories": [
+    "Usage"
+  ],
+  "driver_minimum_cost": 0,
+  "cost_precision": 4,
+  "unallocated_values": {
+    "application": "Unallocated",
+    "environment": "unknown",
+    "cost_center": "UNALLOCATED",
+    "owner": "Unassigned"
+  }
+}
