@@ -547,21 +547,7 @@ Not implemented:
 - Live GCP billing-export ingestion
 - Power BI dashboard
 - Tableau dashboard
-- Accounting accrual and reversal workflow
-- ERP journal posting
-- GitHub Actions orchestration
+
 
 These items are future enhancements and are not presented as completed work.
 
-## Interview Summary
-
-> I built a multi-cloud FinOps pipeline that converts AWS CUR-style and GCP billing-export-style data into a common FOCUS-aligned model. I added validation and reconciliation controls, allocated shared cost proportionally, and detected unusual spending using a trailing-median baseline. I then connected the allocated dataset to Excel with Power Query and built monthly actuals, a documented synthetic budget, blended forecasting, budget and month-over-month variance analysis, usage-rate-scope decomposition, scenario planning, management commentary, anomaly reporting, and an executive dashboard. Every major stage includes a reconciliation control.
-
-## Data and Security
-
-- All billing data committed to this repository is synthetic.
-- `.env` is local-only and must not be committed.
-- Cloud credentials and service-account files are excluded.
-- Generated processed and output files are excluded.
-- Excel and Office temporary lock files are excluded.
-- Real billing exports must be sanitized before public use.
